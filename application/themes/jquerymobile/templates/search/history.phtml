@@ -1,0 +1,66 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search History'));
+
+    /**
+     * Support function to display a table of saved searches.
+     *
+     * @param object $view  View object.
+     * @param bool   $saved Should we display saved (true) or unsaved (false) searches?
+     *
+     * @return string
+     */
+    function showSearchTable($view, $saved)
+    {
+        foreach (($saved ? array_reverse($view->saved) : array_reverse($view->unsaved)) as $iteration => $info) {
+          ?>
+          <li>
+            <a rel="external" href="<?=$view->url($info->getSearchAction(), 'default', true) . $info->getUrl()->getParams()?>">
+            <div class="result">
+            <h3><?
+              $desc = $info->getDisplayQuery();
+              echo empty($desc) ? $view->transEsc("history_empty_search") : $view->escape($desc);
+            ?></h3>
+            <span class="ui-li-count"><?=$view->escape(number_format($info->getResultTotal()))?></span>
+            <p><strong><?=$view->transEsc("history_time")?></strong>: <?=$view->escape(date("g:ia, jS M y", $info->getStartTime()))?></p>
+            <? $info->activateAllFacets(); foreach ($info->getFilterList() as $field => $filters): ?>
+              <? foreach ($filters as $filter): ?>
+                <p><strong><?=$view->transEsc($field)?></strong>: <?=$view->escape($filter['displayText'])?></p>
+              <? endforeach; ?>
+            <? endforeach; ?>
+            </div>
+            </a>
+            <? if ($saved): ?>
+              <a rel="external" href="<?=$view->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="delete"><?=$view->transEsc("history_delete_link")?></a>
+            <? else: ?>
+              <a rel="external" href="<?=$view->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="add"><?=$view->transEsc("history_save_link")?></a>
+            <? endif; ?>
+          </li>
+          <?
+        }
+    }
+?>
+<div data-role="page" id="Search-history">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if (!empty($this->saved) || !empty($this->unsaved)): ?>
+      <? if (!empty($this->saved)): ?>
+        <ul class="results history" data-role="listview" data-dividertheme="e" data-split-icon="minus" data-split-theme="c" data-inset="true">
+          <li data-role="list-divider"><?=$this->transEsc("history_saved_searches")?></li>
+          <? showSearchTable($this, true); ?>
+        </ul>
+      <? endif; ?>
+
+      <? if (!empty($this->unsaved)): ?>
+        <ul class="results history" data-role="listview" data-dividertheme="e" data-split-icon="plus" data-split-theme="c" data-inset="true">
+          <li data-role="list-divider"><?=$this->transEsc("history_recent_searches")?></li>
+          <? showSearchTable($this, false); ?>
+        </ul>
+        <a rel="external" href="?purge=true" data-role="button"><?=$this->transEsc("history_purge")?></a>
+      <? endif; ?>
+    <? else: ?>
+      <p><?=$this->transEsc("history_no_searches")?></p>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

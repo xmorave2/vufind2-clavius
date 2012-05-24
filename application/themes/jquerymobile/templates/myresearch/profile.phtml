@@ -1,0 +1,47 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+
+    /**
+     * Support function -- display rows of the user's profile.
+     *
+     * @param object $view    The view object
+     * @param array  $profile The user profile information
+     * @param array  $rows    A label => profile key associative array specifying
+     * which rows to display
+     *
+     * @return void
+     */
+    function showRows($view, $profile, $rows)
+    {
+        foreach ($rows as $label => $key) {
+            if (isset($profile[$key])) {
+                echo '<dt>' . $label . ':</dt><dd>' . $view->escape($profile[$key]) . '</dd>';
+            }
+        }
+    }
+?>
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <h3><?=$this->transEsc('Your Profile')?></h3>
+    <?=$this->flashmessages();?>
+    <dl class="biblio">
+    <?
+        showRows(
+            $this, $this->profile,
+            array(
+                $this->transEsc('First Name') => 'firstname',
+                $this->transEsc('Last Name') => 'lastname',
+                $this->transEsc('Address') . ' 1' => 'address1',
+                $this->transEsc('Address') . ' 2' => 'address2',
+                $this->transEsc('Zip') => 'zip',
+                $this->transEsc('Phone Number') => 'phone',
+                $this->transEsc('Group') => 'group'
+            )
+        );
+     ?>
+     </dl>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

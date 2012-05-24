@@ -1,0 +1,25 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search Home'));
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
+  <div data-role="content">
+    <? if (VF_Connection_Manager::connectToCatalog()->getOfflineMode() == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? endif; ?>
+    <?=$this->partial("search/searchbox.phtml", $this)?>
+    <ul data-role="listview" data-inset="true" data-dividertheme="b">
+      <li data-role="list-divider"><?=$this->transEsc('Find More')?></li>
+      <li><a rel="external" href="<?=$this->url(array('controller' => 'Search', 'action' => 'Reserves'), 'default', true)?>"><?=$this->transEsc('Course Reserves')?></a></li>
+      <li><a rel="external" href="<?=$this->url(array('controller' => 'Search', 'action' => 'NewItem'), 'default', true)?>"><?=$this->transEsc('New Items')?></a></li>
+    </ul>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

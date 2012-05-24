@@ -1,0 +1,84 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search History'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<em>' . $this->transEsc('History') . '</em>';
+
+    /**
+     * Support function to display a table of saved searches.
+     *
+     * @param object $view  View object.
+     * @param bool   $saved Should we display saved (true) or unsaved (false) searches?
+     *
+     * @return string
+     */
+    function showSearchTable($view, $saved)
+    {
+        ?>
+        <table class="datagrid" width="100%">
+          <tr>
+            <th width="25%"><?=$view->transEsc("history_time")?></th>
+            <th width="30%"><?=$view->transEsc("history_search")?></th>
+            <th width="30%"><?=$view->transEsc("history_limits")?></th>
+            <th width="10%"><?=$view->transEsc("history_results")?></th>
+            <th width="5%"><?=$view->transEsc($saved ? "history_delete" : "history_save")?></th>
+          </tr>
+          <? foreach (($saved ? array_reverse($view->saved) : array_reverse($view->unsaved)) as $iteration => $info): ?>
+            <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
+              <td><?=$view->escape(date("g:ia, jS M y", $info->getStartTime()))?></td>
+              <td>
+                <a href="<?=$view->url($info->getSearchAction(), 'default', true) . $info->getUrl()->getParams()?>"><?
+                  $desc = $info->getDisplayQuery();
+                  echo empty($desc) ? $view->transEsc("history_empty_search") : $view->escape($desc);
+                ?></a>
+              </td>
+              <td>
+                <? $info->activateAllFacets(); foreach ($info->getFilterList() as $field => $filters): ?>
+                  <? foreach ($filters as $filter): ?>
+                    <strong><?=$view->transEsc($field)?></strong>: <?=$view->escape($filter['displayText'])?><br/>
+                  <? endforeach; ?>
+                <? endforeach; ?>
+              </td>
+              <td><?=$view->escape(number_format($info->getResultTotal()))?></td>
+              <td>
+                <? if ($saved): ?>
+                  <a href="<?=$view->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="delete"><?=$view->transEsc("history_delete_link")?></a>
+                <? else: ?>
+                  <a href="<?=$view->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="add"><?=$view->transEsc("history_save_link")?></a>
+                <? endif; ?>
+              </td>
+            </tr>
+          <? endforeach; ?>
+        </table>
+        <?
+    }
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+    <? if (!empty($this->saved) || !empty($this->unsaved)): ?>
+      <? if (!empty($this->saved)): ?>
+        <h3><?=$this->transEsc("history_saved_searches")?></h3>
+        <? showSearchTable($this, true); ?>
+      <? endif; ?>
+
+      <? if (!empty($this->unsaved)): ?>
+        <h3><?=$this->transEsc("history_recent_searches")?></h3>
+        <? showSearchTable($this, false); ?>
+        <a href="?purge=true" class="delete"><?=$this->transEsc("history_purge")?></a>
+      <? endif; ?>
+    <? else: ?>
+      <h3><?=$this->transEsc("history_recent_searches")?></h3>
+      <?=$this->transEsc("history_no_searches")?>
+    <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->partial(
+         "myresearch/menu.phtml",
+         // Only activate search history in account menu if user is logged in.
+         VF_Account_Manager::getInstance()->isLoggedIn() ? array('active' => 'history') : array()
+     );
+  ?>
+</div>
+
+<div class="clear"></div>

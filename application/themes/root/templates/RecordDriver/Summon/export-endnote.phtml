@@ -1,0 +1,35 @@
+<?
+/**
+ * Support function to convert Summon format to EndNote format:
+ *
+ * @param string $format Summon format
+ *
+ * @return string
+ */
+function getSummonFormat($format)
+{
+    switch ($format) {
+    case 'Journal Article':
+        return 'Journal Article';
+    case 'Book':
+        return 'Book';
+    case 'Book Chapter':
+        return 'Book Section';
+    case 'Conference Proceeding':
+        return 'Conference Paper';
+    case 'Dissertation':
+        return 'Thesis';
+    default:
+        return 'Generic';
+    }
+}
+
+// Convert Summon formats to EndNote formats:
+$formats = $this->driver->getFormats();
+foreach ($formats as $i => $format) {
+    $formats[$i] = getSummonFormat($format);
+}
+
+// Use the default template, but override the formats:
+echo $this->partial('RecordDriver/Base/export-endnote.phtml', array('driver' => $this->driver, 'overrideFormats' => $formats));
+?>

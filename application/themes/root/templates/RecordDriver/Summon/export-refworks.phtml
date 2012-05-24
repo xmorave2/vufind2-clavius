@@ -1,0 +1,57 @@
+<?
+/**
+ * Support function to convert Summon format to RefWorks format:
+ *
+ * @param string $format Summon format
+ *
+ * @return string
+ */
+function getSummonFormat($format)
+{
+    switch ($format) {
+    case 'Book Chapter':
+        return 'Book, Section';
+    case 'Book':
+        return 'Book, Whole';
+    case 'eBook':
+        return 'Book, Whole';
+    case 'Computer File':
+        return 'Computer Program';
+    case 'Conference Proceeding':
+        return 'Conference Proceedings';
+    case 'Dissertation':
+        return 'Dissertation/Thesis';
+    case 'Journal Article':
+        return 'Journal Article';
+    case 'Journal':
+        return 'Journal, Electronic';
+    case 'Trade Publication Article':
+        return 'Magazine Article';
+    case 'Map':
+        return 'Map';
+    case 'Music Score':
+        return 'Music Score';
+    case 'Newspaper Article':
+        return 'Newspaper Article';
+    case 'Report':
+        return 'Report';
+    case 'Audio Recording':
+        return 'Sound Recording';
+    case 'Video Recording':
+        return 'Video/ DVD';
+    case 'Web Resource':
+        return 'Web Page';
+    default:
+        return 'Generic';
+    }
+}
+
+// Convert Summon formats to RefWorks formats:
+$formats = $this->driver->getFormats();
+foreach ($formats as $i => $format) {
+    $formats[$i] = getSummonFormat($format);
+}
+
+// Use the default template, but override the formats:
+echo $this->partial('RecordDriver/Base/export-refworks.phtml', array('driver' => $this->driver, 'overrideFormats' => $formats));
+?>

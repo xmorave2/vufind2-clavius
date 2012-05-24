@@ -1,0 +1,73 @@
+<?
+  $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']);
+  $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .'<em>'. $this->transEsc('Document Inspector').'</em>';
+
+  // HEADER FILES
+  $this->headScript()->appendFile('vudl.js');
+  $this->headLink()->appendStylesheet('vudl.css');
+  $this->headLink()->appendStylesheet('inspector.css'); // inspector css
+  
+  // INSPECTOR - WRITTEN BY CHRIS HALLBERG
+  $this->headScript()->appendFile('jquery-ui/js/inspector.js');    // inspector plugin
+  $this->headScript()->appendFile('jquery-ui/js/mousewheel.js');   // mousewheel plugin
+  $this->headScript()->appendFile('jquery-ui/js/img-rotate.js');   // image rotation plugin
+?>
+<script>
+  var documentID = '<?=$this->id ?>';
+  var fileName = '<?=$this->file ?>';
+</script>
+<div class="inspector_container">
+  <div class="side_nav">
+    <a href="javascript:showPages()" class="top">Pages</a>
+    <a href="javascript:showDocs()" class="top">Docs</a>
+    <div class="page_list">
+<? foreach ($this->firstPages as $page): ?>
+      <div class="page_link new">
+        <img src="<?=$page['thumbnail'] ?>">
+        <?=$page['label'] ?>
+<? echo PHP_EOL ?>
+      </div>
+<? endforeach; ?>
+    </div>
+    <span class="side-loading page_list">loading...</span>
+    <div class="doc_list">
+<? foreach ($this->docs as $doc): ?>
+      <a href="<?=$doc['src'] ?>" class="page_link" target="_new">
+        <div class="<?=$doc['img'] ?>"></div>
+        <?=$doc['label'] ?>
+<? echo PHP_EOL ?>
+      </a>
+<? endforeach; ?>
+    </div>
+  </div>
+  <div class="view">
+    <div class="navigation">
+      <a onClick="showOriginal('<?=$this->firstPages[0]['original'] ?>')">Original</a>
+      <a onClick="showPreview('<?=$this->firstPages[0]['large'] ?>',this)">Large</a>
+      <a onClick="showPreview('<?=$this->firstPages[0]['medium'] ?>',this)">Medium</a>
+      <a onClick="showZoom('<?=$this->firstPages[0]['large'] ?>',this)">Zoom</a>
+      <a onClick="showInfo()">Information</a>
+    </div>
+    <div class="preview">
+      <img id="preview" src="">
+    </div>
+    <div class="original">      
+    </div>
+    <div class="zoomFrame">Javascript Required to Use Zoom Feature</div>
+    <div class="information">
+      <h2>Information</h2>
+<? foreach ($this->details as $attr=>$val): ?>
+      <p><b><?=$this->transEsc(ucfirst($attr)) ?>:</b> <?=$val ?></p>
+<? endforeach; ?>
+    </div>
+    <script>
+      pages = $.parseJSON('<?=json_encode($this->firstPages) ?>');
+      setPageLinkClicks();
+      showPages();
+<? if (count($this->firstPages) < 5): ?>
+      $('.side-loading').html('All Pages Loaded');
+<? endif; ?>
+    </script>
+  </div>
+</div>
+<div class="bottom">&nbsp;</div>

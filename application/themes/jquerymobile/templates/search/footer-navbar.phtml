@@ -1,0 +1,5 @@
+<? if ($this->action == 'history'): // use myresearch navbar for Search/history ?>
+  <?=$this->partial('myresearch/footer-navbar.phtml', $this)?>
+<? else:                            // use default navbar for everything else ?>
+  <?=$this->partial('default-footer-navbar.phtml', $this);?>
+<? endif; ?>

@@ -1,0 +1,6 @@
+<? if (!empty($this->authors)): ?><?=$this->escape($this->authors)?> <? endif; ?>
+<? if (!empty($this->date)): ?>(<?=$this->escape($this->date)?>). <? endif; ?>
+<?=$this->escape($this->title)?><? if ($this->periodAfterTitle): ?>.<? endif ?> 
+<span style="font-style:italic;"><?=$this->escape($this->journal)?></span>, 
+<? if (!empty($this->number)): ?><?=$this->escape($this->number)?>, <? endif; ?>
+<?=$this->escape($this->pageRange)?>.

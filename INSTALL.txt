@@ -1,0 +1,56 @@
+INSTALL
+=======
+
+WARNING: VuFind 2.0 is a work in progress.
+
+Currently to try out the VuFind 2.0 interface we recommend installing it side-by-side
+on a system that is already running a 1.x version of VuFind. All external
+dependencies like the Zend Framework are bundled in to the Vufind 2.0 code base.
+We will use the same Solr index and MySQL database for both interfaces. You should
+use the 1.x vufind.sh script to start/stop Solr and the 1.x import-marc.sh script to
+import data into the Solr index.
+
+Instructions
+============
+
+1. Install VuFind 1.x (see http://vufind.org/wiki/installation)
+
+2. Pull Vufind2 code from the SVN repository
+
+svn export https://vufind.svn.sourceforge.net/svnroot/vufind/branches/vufind2/ /usr/local/vufind2
+
+3. Run the VuFind2 install script:
+
+cd /usr/local/vufind2
+php install.php
+
+Be sure you choose a base path for the URL that does not conflict with VuFind 1.x (/vufind2
+is a good choice).
+
+4. Copy your VuFind 1.x config.ini into VuFind 2.0:
+
+cp -p /usr/local/vufind/web/conf/config.ini /usr/local/vufind2/local/application/configs/config.ini
+
+If you are not already using the "blueprint" theme, be sure to edit VuFind 2.0's copy
+of config.ini to change the "theme" setting in the "[Site]" section to "blueprint"
+since other themes are not yet supported.
+
+Additionally, not all ILS drivers have been ported over yet; if in doubt, you can use
+the "Demo" driver. Similarly, some Authentication options are not available yet; LDAP
+is your best bet for the moment.
+
+5. Create a symlink to VuFind2's Apache configuration file and restart Apache.
+
+ln -s /usr/local/vufind2/local/httpd-vufind.conf /etc/apache2/conf.d/vufind2
+/etc/init.d/apache2 restart
+
+6. Ensure that your web server can write to the cache directories
+(Apache)
+chown www-data:www-data /usr/local/vufind2/cache /usr/local/vufind2/local/cache
+
+(Note that these steps may vary depending on your operating system).
+
+=================================
+
+You should now have a working Vufind 2.0 instance running at
+http://library.myuniversity.edu/vufind2

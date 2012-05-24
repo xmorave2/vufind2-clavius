@@ -1,0 +1,6 @@
+<?
+  // Load the Solr-specific advanced search controls and inject them into the
+  // standard advanced search layout:
+  $this->extraAdvancedControls = $this->partial('search/advanced/solr.phtml', $this);
+  echo $this->partial('search/advanced/layout.phtml', $this);
+?>

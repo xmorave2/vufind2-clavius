@@ -1,0 +1,82 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<a href="' .
+        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
+        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
+        $this->transEsc('Profile') . '</em>';
+
+    // Only display home library form if we have multiple pickup locations:
+    $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
+
+    /**
+     * Support function -- display rows of the user's profile.
+     *
+     * @param object $view    The view object
+     * @param array  $profile The user profile information
+     * @param array  $rows    A label => profile key associative array specifying
+     * which rows to display
+     *
+     * @return void
+     */
+    function showRows($view, $profile, $rows)
+    {
+        foreach ($rows as $label => $key) {
+            if (isset($profile[$key])) {
+                echo '<span class="span-3"><strong>' . $label . ':</strong></span> ' .
+                  $view->escape($profile[$key]) . '<br class="clear"/>';
+            }
+        }
+    }
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h3><?=$this->transEsc('Your Profile')?></h3>
+  <?=$this->flashmessages();?>
+  <? if ($showHomeLibForm): ?><form method="post" action="" id="profile_form"><? endif; ?>
+  <?
+      showRows(
+          $this, $this->profile,
+          array(
+              $this->transEsc('First Name') => 'firstname',
+              $this->transEsc('Last Name') => 'lastname'
+          )
+      );
+   ?>
+  <? if ($showHomeLibForm): ?>
+    <span class="span-3"><label for="home_library"><?=$this->transEsc('Preferred Library')?>:</label></span>
+    <?
+      $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+          ? $this->profile['home_library'] : $this->defaultPickupLocation
+    ?>
+    <select id="home_library" name="home_library">
+      <? foreach ($this->pickup as $lib): ?>
+        <option value="<?=$this->escape($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escape($lib['locationDisplay'])?></option>
+      <? endforeach; ?>
+    </select>
+    <br class="clear"/>
+  <? endif; ?>
+  <?
+      showRows(
+          $this, $this->profile,
+          array(
+              $this->transEsc('Address') . ' 1' => 'address1',
+              $this->transEsc('Address') . ' 2' => 'address2',
+              $this->transEsc('Zip') => 'zip',
+              $this->transEsc('Phone Number') => 'phone',
+              $this->transEsc('Group') => 'group'
+          )
+      );
+   ?>
+  <? if ($showHomeLibForm): ?>
+    <input type="submit" value="<?=$this->transEsc('Save Profile')?>" />
+    </form>
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->partial("myresearch/menu.phtml", array('active' => 'profile'))?>
+</div>
+
+<div class="clear"></div>
